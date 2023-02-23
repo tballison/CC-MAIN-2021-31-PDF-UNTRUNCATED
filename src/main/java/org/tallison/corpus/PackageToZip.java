@@ -1,5 +1,6 @@
 package org.tallison.corpus;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +11,7 @@ import java.nio.file.attribute.FileTime;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.amazonaws.ClientConfiguration;
@@ -65,8 +67,40 @@ public class PackageToZip {
         return amazonS3ClientBuilder.build();
     }
     private static void execute(PackageConfig packageConfig) throws Exception {
-        String sql = packageConfig.getSelectString();
 
+        if (StringUtils.isAllBlank(packageConfig.getCsvPath())) {
+            processSql(packageConfig);
+        } else {
+            processCsv(packageConfig);
+        }
+    }
+
+    private static void processCsv(PackageConfig packageConfig) throws IOException {
+        Path zipDir = Paths.get(packageConfig.getZipDir());
+        Path csvPath = Paths.get(packageConfig.getCsvPath());
+        String zipName = null;
+        ArchiveOutputStream aos = null;
+        try (BufferedReader reader = Files.newBufferedReader(csvPath)) {
+            String line = reader.readLine();
+            while (line != null) {
+                String[] cols = line.split(",");
+                int id = Integer.parseInt(cols[0]);
+                String digest = cols[1];
+                String nextZipName = getZipName(id);
+                LOGGER.info("{} {} {} {}", id, digest, zipName, nextZipName);
+                if (! nextZipName.equals(zipName)) {
+                    finishZip(packageConfig, aos, zipDir, zipName);
+                    aos = getArchiveOutputStream(zipDir, nextZipName);
+                }
+                processFile(packageConfig, id, digest, aos);
+                zipName = nextZipName;
+
+            }
+        }
+    }
+
+    private static void processSql(PackageConfig packageConfig) throws SQLException, IOException {
+        String sql = packageConfig.getSelectString();
         Path zipDir = Paths.get(packageConfig.getZipDir());
         try (Connection connection =
                      DriverManager.getConnection(packageConfig.getDbConnectionString())) {
@@ -93,15 +127,16 @@ public class PackageToZip {
     }
 
     private static void processFile(PackageConfig packageConfig, int id, String digest,
-                                    ArchiveOutputStream aos) throws IOException {
+                                    ArchiveOutputStream aos) {
         String fetchKey = packageConfig.getSrcPrefix();
         if (fetchKey.length() > 0 && ! fetchKey.endsWith("/")) {
             fetchKey += "/";
         }
         fetchKey += digest.substring(0,2) + "/" + digest.substring(2,4) + "/" + digest;
-        GetObjectRequest objectRequest = new GetObjectRequest(packageConfig.getSrcBucket(), fetchKey);
-        Path tmp = Files.createTempFile("s3-tmp", "");
+        Path tmp = null;
         try {
+            GetObjectRequest objectRequest = new GetObjectRequest(packageConfig.getSrcBucket(), fetchKey);
+            tmp = Files.createTempFile("s3-tmp", "");
             ObjectMetadata objectMetadata = FETCH_CLIENT.getObject(objectRequest, tmp.toFile());
 
             try (InputStream is = Files.newInputStream(tmp)) {
@@ -120,15 +155,31 @@ public class PackageToZip {
         } catch (Exception e) {
             LOGGER.error("couldn't get/copy/write " + fetchKey, e);
         } finally {
-            Files.delete(tmp);
+            if (tmp != null) {
+                try {
+                    Files.delete(tmp);
+                } catch (IOException e) {
+                    LOGGER.warn("problem deleting tmp: " + tmp, e);
+                }
+            }
         }
     }
 
     private static void finishZip(PackageConfig packageConfig, ArchiveOutputStream aos, Path zipDir,
+                                  String zipName) {
+        try {
+            _finishZip(packageConfig, aos, zipName);
+        } catch (IOException e) {
+            LOGGER.error("couldn't finish zip " + zipName, e);
+        }
+    }
+
+    private static void _finishZip(PackageConfig packageConfig, ArchiveOutputStream aos,
                                   String zipName) throws IOException {
         if (aos == null) {
             return;
         }
+        Path zipDir = Paths.get(packageConfig.getZipDir());
         LOGGER.info("about to finish zip {} {} {}", zipName);
         aos.finish();
         aos.close();

@@ -38,7 +38,7 @@ offer a richer view of the data via extracted metadata.
 The table `cc-provenance-table.csv.gz` contains all provenance information.
 
 * `file_name` -- name of the file as our project named it inside the zip
-* `url` -- target url extracted from Common Crawl's index files
+* `url` -- target url extracted from Common Crawl's index files. Max length in this set is 6,771 characters.
 * `cc_digest` -- digest calculated by Common Crawl and extracted from the index files
 * `cc_http_mime` -- mime as extracted from Common Crawl's index files -- this derives from the http header
 * `cc_detected_mime` -- the detected mime as extracted from Common Crawl's index files.

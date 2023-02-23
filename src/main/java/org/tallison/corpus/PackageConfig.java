@@ -2,9 +2,13 @@ package org.tallison.corpus;
 
 public class PackageConfig {
 
-    private String dbConnectionString;
+    // The config either has to have a csvPath, which
+    //points to a csv of file_id,digest or
+    //it has to have a dbConnectionString and a selectString
+    private String csvPath;
 
     private String selectString;
+    private String dbConnectionString;
 
     private String srcRegion;
     private String srcBucket;
@@ -118,5 +122,13 @@ public class PackageConfig {
 
     public void setDeleteLocalZips(boolean deleteLocalZips) {
         this.deleteLocalZips = deleteLocalZips;
+    }
+
+    public String getCsvPath() {
+        return csvPath;
+    }
+
+    public void setCsvPath(String csvPath) {
+        this.csvPath = csvPath;
     }
 }
