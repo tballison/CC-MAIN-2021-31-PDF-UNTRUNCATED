@@ -183,7 +183,7 @@ public class PackageToZip {
         LOGGER.info("about to finish zip {} {} {}", zipName);
         aos.finish();
         aos.close();
-        //TODO cp zip and then delete
+
         Path zip = zipDir.resolve(zipName);
         LOGGER.info("about to copy " + zip);
         String targetPath = packageConfig.getTargPrefix();
@@ -200,7 +200,11 @@ public class PackageToZip {
         LOGGER.info("successfully wrote: {}", targetPath);
 
         if (packageConfig.isDeleteLocalZips()) {
-            Files.delete(zip);
+            try {
+                Files.delete(zip);
+            } catch (IOException e) {
+                LOGGER.warn("couldn't delete: " + zip, e);
+            }
         }
     }
 
