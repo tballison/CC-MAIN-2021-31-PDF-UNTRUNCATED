@@ -28,6 +28,13 @@ public class PackageConfig {
 
     private boolean deleteLocalZips = true;
 
+    private boolean dryRun = false;
+
+    private int fromZip = 0;
+    private int toZip = 8100;
+
+    private int numThreads = 10;
+
     public String getDbConnectionString() {
         return dbConnectionString;
     }
@@ -130,5 +137,37 @@ public class PackageConfig {
 
     public void setCsvPath(String csvPath) {
         this.csvPath = csvPath;
+    }
+
+    public void setDryRun(boolean dryRun) {
+        this.dryRun = dryRun;
+    }
+
+    public boolean isDryRun() {
+        return dryRun;
+    }
+
+    public int getFromZip() {
+        return fromZip;
+    }
+
+    public void setFromZip(int fromZip) {
+        this.fromZip = fromZip;
+    }
+
+    public int getToZip() {
+        return toZip;
+    }
+
+    public void setToZip(int toZip) {
+        this.toZip = toZip;
+    }
+
+    public int getNumThreads() {
+        return numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+        this.numThreads = numThreads;
     }
 }
