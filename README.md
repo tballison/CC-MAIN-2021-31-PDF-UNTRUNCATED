@@ -45,10 +45,10 @@ This corpus is thus useful for:
 
 
 # Packaging
-Each of the 7,932 zip files contains 1,000 PDF files -- except the last, obviously.
+Each of the 7,932 zip files contains 1,000 PDF files -- except the last, obviously (see also the [Errata](errata) section below).
 We have removed duplicates (based on SHA-256 hash of the PDF file) -- there are 8.3 million URLs for which we have a PDF file, and there are 7.9 million unique PDF files.
-All files are named using a 7-digit number with a `.pdf` extension (e.g. `0000000.pdf`, `0000001.pdf`, etc.) -- the file number is arbitrary in this corpus.  
-Each zip file is slightly more than 1 GB, and uncompressed, the entire corpus takes up nearly 8 TB.
+All files are named using a 7-digit number with a `.pdf` extension (e.g. `0000000.pdf`, `0000001.pdf` through `7932877.pdf`) -- the file number is arbitrary in this corpus.  
+Each zip file is around slightly more than 1 GB. Uncompressed, the entire corpus takes up nearly 8 TB.
 
 # Supplementary Metadata
 We include tables to link each PDF file back to the original Common Crawl record in the `CC-MAIN-2021-31` dataset and to
