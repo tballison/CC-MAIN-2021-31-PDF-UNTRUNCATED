@@ -4,44 +4,62 @@
 
 # Overview
 This corpus contains nearly 8 million PDFs gathered from the across the web in July/August of 2021. 
-The files were initially gathered by [Common Crawl](https://commoncrawl.org/) as part of 
-their July/August 2021 crawl, identified as `CC-MAIN-2021-31`.
+The PDF files were initially identified by [Common Crawl](https://commoncrawl.org/) as part of 
+their July/August 2021 crawl (identified as `CC-MAIN-2021-31`) and subsequently updated and collated as part of the [DARPA SafeDocs program](https://www.darpa.mil/program/safe-documents).
 
-For this specific crawl, the Common Crawl project [writes](https://commoncrawl.org/2021/08/july-august-2021-crawl-archive-available/):
+This current corpus offers five benefits over Common Crawl datasets as stored in 
+[Amazon Public Datasets](https://registry.opendata.aws/commoncrawl/).
+
+1. Common Crawl truncates files at 1MB. For this corpus, we refetched the complete/untruncated PDF files from the original URLs without any file size limitation.
+2. This corpus offers a tractable subset of the files, focusing on a single format: PDF.
+3. We have supplemented the metadata to include geo-ip-location (where possible) and other metadata extracted from the PDF files (e.g. by [pdfinfo](http://poppler.freedesktop.org)).
+4. All PDF files (both Common Crawl <1MB PDFs and the larger truncated PDFs that were refetched) are conveniently packaged in the zip format. This is the same as [GovDocs1](https://digitalcorpora.org/corpora/files/).
+5. At the time of its creation, this is the largest single corpus of real-world (extant) PDFs that is publicly available. Many other [smaller, targeted or synthetic PDF-centric corpora](https://github.com/pdf-association/pdf-corpora) exist. 
+
+It is not possible to rigorously assess how representative this corpus is of PDF files across the entire the web or of PDF files in general. 
+It is [well known](https://www.youtube.com/watch?v=5Af3IC5WxPo) that a significant number of PDF files lie within private intranets or repositories, behind log ins, and are not made publicly accessible due to PII or other confidential content.
+This means that all corpora created by web crawling may not adequately represent every PDF feature or capability, however preliminary analysis suggests that Common Crawl data should be viewed as a convenience sample.  
+The crawls may not be representative nor complete, but they do offer a large set of data from the publicly accessible web.
+
+For the specific `CC-MAIN-2021-31` crawl, the Common Crawl project [writes](https://commoncrawl.org/2021/08/july-august-2021-crawl-archive-available/):
 
 >The data was crawled July 23 – August 6 and contains 3.15 billion web pages or 360 TiB of uncompressed content. It includes page captures of 1 billion new URLs, not visited in any of our prior crawls.
 
-This current corpus offers four benefits over the Common Crawl dataset as stored in 
-[Amazon Public Datasets](https://registry.opendata.aws/commoncrawl/).
-
-1. Common Crawl truncates files at 1MB. For this corpus, we refetched the complete/untruncated files from the original URLs.
-2. This corpus offers a tractable subset of the files, focusing on a single format: PDF.
-3. We have supplemented the metadata to include geo-ip-location (where possible) and other data extracted from the files (e.g. by [pdfinfo](http://poppler.freedesktop.org)).
-4. The files are extracted from their containing Web ARChive (WARC) files and packaged in the zip format.
-
-We have not rigorously assessed how representative this corpus is of PDF files on the web.  
-Preliminary analysis suggests that Common Crawl data should be viewed as a convenience sample.  
-The crawls may not be representative nor complete, but they do offer a large set of data from the web.
-
 We could not have done this work without the initial Common Crawl data.  Please note Common Crawl's [license and terms of use](https://commoncrawl.org/terms-of-use/full/).
 
+## Application
+
+PDF is a ubiquitous format and used across many industrial and research domains.
+Many exiting corpora focusing on extant data (such as GovDocs1) are now quite old and no longer reflect current changes and trends in both PDF itself (as a file format) or in PDF-creating and authoring applications. With advances in machine learning technology the need for larger data sets is also in high demand. This corpus is thus useful for:
+
+*	PDF technology and software testing, assessment, and evaluation
+*	Information privacy research
+*	Document understanding, text extraction, table identification, OCR/ICR, formula identification, document recognition and analysis, and related document engineering domains
+*	Malware and cyber-security research
+*	ML/AI applications and research (document classification, document content, text extraction, etc)
+*	Preservation and archival research
+*	Usability and accessibility research
+*	Software engineering research (parsing, formal methods, etc.)
+
+
 # Packaging
-Each of the 7,999 zip files contains 1,000 files -- except the last, obviously.  
-We have removed duplicates -- there are 8.3 million URLs for which we have a file, and there are 7.9 unique files.
-Each zip file is slightly more than 1 GB, and uncompressed, the files take up nearly 8 TB.
+Each of the 7,999 zip files contains 1,000 PDF files -- except the last, obviously.
+We have removed duplicates (based on SHA-256 hash of the PDF file) -- there are 8.3 million URLs for which we have a PDF file, and there are 7.9 million unique PDF files.
+All files are named using a 7-digit number with a `.pdf` extension (e.g. `0000000.pdf`, `0000001.pdf`, etc.) -- the file number is arbitrary in this corpus.  
+Each zip file is slightly more than 1 GB, and uncompressed, the entire corpus takes up nearly 8 TB.
 
 # Supplementary Metadata
-We include tables to link the files back to the original Common Crawl records in the `CC-MAIN-2021-31` dataset and to
+We include tables to link each PDF file back to the original Common Crawl record in the `CC-MAIN-2021-31` dataset and to
 offer a richer view of the data via extracted metadata.
 
 ## Crawl Data
-The table `cc-provenance-table.csv.gz` contains all provenance information.
+The table `cc-provenance-table.csv.gz` contains all provenance information:
 
-* `file_name` -- name of the file as our project named it inside the zip
+* `file_name` -- name of the PDF file as our project named it inside the zip
 * `url` -- target url extracted from Common Crawl's index files. Max length in this set is 6,771 characters.
 * `cc_digest` -- digest calculated by Common Crawl and extracted from the index files
-* `cc_http_mime` -- mime as extracted from Common Crawl's index files -- this derives from the http header
-* `cc_detected_mime` -- the detected mime as extracted from Common Crawl's index files.
+* `cc_http_mime` -- MIME as extracted from Common Crawl's index files -- this derives from the http header
+* `cc_detected_mime` -- the detected MIME as extracted from Common Crawl's index files.
 * `cc_warc_file_name` -- the Common Crawl warc file where the file's individual warc file is stored
 * `cc_warc_start` -- the offset within the `cc_warc_file` where the individual warc file is stored
 * `cc_warc_end` -- this is the end of the individual warc file within the larger `cc_warc_file`
@@ -49,18 +67,18 @@ The table `cc-provenance-table.csv.gz` contains all provenance information.
 * `cc_truncated` -- this is Common Crawl's code for why the file was truncated if the file was truncated.  This information was extracted from Common Crawl's indices. Values include:
   * `''` (6,383,873) -- (empty string) -- Common Crawls records this as not truncated
   * `length` (2,020,913) -- the file was truncated because of length
-  * `disconnect` (5,861) -- there was a network disconnection during Common Crawl's fetch
-  * `time` (56) -- there was a timeout during Common Crawl's fetch
+  * `disconnect` (5,861) -- there was a network disconnection during Common Crawl's original fetch
+  * `time` (56) -- there was a timeout during Common Crawl's original fetch
 * `fetched_status` -- records our project's status for obtaining the file. Values include:
-  * `ADDED_TO_REPOSITORY` (6,377,619) -- extracted from Common Crawl
+  * `ADDED_TO_REPOSITORY` (6,377,619) -- extracted directly from the Common Crawl data
   * `REFETCHED_SUCCESS` (1,922,505) -- our project refetched content from the original target URL
   * `REFETCH_UNHAPPY_HOST` (53,038) -- we tried to refetch a URL, but the failures from that host exceeded our threshold.  (We didn't want to bother a host that had refused our refetches)
   * `REFETCHED_IO_EXCEPTION_READING_ENTITY` (45,561) -- during our refetch, there was an IOException while trying to read the contents
   * `EMPTY_PAYLOAD` (5,719) -- There was an empty payload in the Common Crawl warc file.
   * `REFETCHED_TIMEOUT` (5,157) -- timeout during our attempted refetch.
-  * `REFETCHED_IO_EXCEPTION` (569) -- general IOException while trying to refetch.
+  * `REFETCHED_IO_EXCEPTION` (569) -- general IOException while we were trying to refetch.
   * `null` (506) -- ??
-  * `FETCHED_EXCEPTION_EMITTING` (29) -- there was an exception trying to write to S3
+  * `FETCHED_EXCEPTION_EMITTING` (29) -- there was an exception when we tried to write a refetched PDF to S3
 * `fetched_digest` -- the sha256 that we calculated on the bytes that we have for the file
 * `fetched_length` -- the length in bytes of the file that we extracted from Common Crawl or refetched
 
@@ -140,9 +158,10 @@ Wayne Burke, Dustin Graf, Tim Allison, Ryan Stonebraker, Mike Milano,
 Philip Southam and Anastasia Menshikova.
 
 The JPL team collaborated with Peter Wyatt, the Chief Technology Officer 
-of the PDF Association, in the design and documentation of the corpus.
+of the PDF Association and PI on the SafeDocs program, in the design and documentation of the corpus.
 
-The JPL team would like to thank Simson Garfinkel and Digital Corpora for taking ownership of this dataset and publishing it.
+The JPL team and PDF Association would like to thank Simson Garfinkel and Digital Corpora for taking ownership of this dataset and publishing it.
+Our thanks is extended to the [Amazaon Open Data Sponsorship Program](https://aws.amazon.com/opendata/open-data-sponsorship-program/) for enabling this large corpus to be free and publicly available as part of Digitial Corpora initiative. 
 
 Reference herein to any specific commercial product, process, or service 
 by trade name, trademark, manufacturer, or otherwise, does not constitute 
