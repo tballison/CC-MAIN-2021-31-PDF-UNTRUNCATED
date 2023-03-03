@@ -1,4 +1,4 @@
-# CC-MAIN-2021-31-PDF-UNTRUNCATED #
+# CC-MAIN-2021-31-PDF-UNTRUNCATED 
 
 # Overview
 This corpus contains nearly 8 million PDFs gathered from the across the web in July/August of 2021. 
@@ -52,12 +52,13 @@ Each zip file is around slightly more than 1 GB. Uncompressed, the entire corpus
 
 # Supplementary Metadata
 We include tables to link each PDF file back to the original Common Crawl record in the `CC-MAIN-2021-31` dataset and to
-offer a richer view of the data via extracted metadata.
+offer a richer view of the data via extracted metadata. These are placed in the `metadata/` directory.
 
 ## Crawl Data
-The table `cc-provenance-table.csv.gz` contains all provenance information:
-
-* `file_name` -- name of the PDF file as our project named it inside the zip
+The table `cc-provenance-20230303.csv.gz` contains all provenance information.  We
+have included a 1k row sample of this data in `cc-provenance-20230303.csv.gz`.
+* `url_id` -- primary key for each URL fetched or refetched
+* `file_name` -- name of the PDF file as our project named it inside the zip. This value is not unique in this table because a given PDF (as identified by its sha256) may have been fetched from multiple URLs.
 * `url` -- target url extracted from Common Crawl's index files. Max length in this set is 6,771 characters.
 * `cc_digest` -- digest calculated by Common Crawl and extracted from the index files
 * `cc_http_mime` -- MIME as extracted from Common Crawl's index files -- this derives from the http header
@@ -65,7 +66,6 @@ The table `cc-provenance-table.csv.gz` contains all provenance information:
 * `cc_warc_file_name` -- the Common Crawl warc file where the file's individual warc file is stored
 * `cc_warc_start` -- the offset within the `cc_warc_file` where the individual warc file is stored
 * `cc_warc_end` -- this is the end of the individual warc file within the larger `cc_warc_file`
-* `host_id` -- this is a project-internal foreign key for the url's host
 * `cc_truncated` -- this is Common Crawl's code for why the file was truncated if the file was truncated.  This information was extracted from Common Crawl's indices. Values include:
   * `''` (6,383,873) -- (empty string) -- Common Crawls records this as not truncated
   * `length` (2,020,913) -- the file was truncated because of length
@@ -82,6 +82,8 @@ The table `cc-provenance-table.csv.gz` contains all provenance information:
   * `null` (506) -- ??
   * `FETCHED_EXCEPTION_EMITTING` (29) -- there was an exception when we tried to write a refetched PDF to S3
 * `fetched_digest` -- the sha256 that we calculated on the bytes that we have for the file
+  * `FETCHED_EXCEPTION_EMITTING` (29) -- there was an exception trying to write to S3
+* `fetched_digest` -- the sha256 that we calculated on the bytes that we have for the file, whether fetched from CC or refetched
 * `fetched_length` -- the length in bytes of the file that we extracted from Common Crawl or refetched
 
 **Top 10 `cc_http_mime` values:**
@@ -115,8 +117,12 @@ The table `cc-provenance-table.csv.gz` contains all provenance information:
 |application/gzip|    	76     |
 
 ## Hosts
+The `cc-hosts-20230303.csv.gz` contains information about the hosts and, where possible
+the geographic location of the host for each PDF.
+The columns include:
 
-* `id` -- primary key to be used in joins with the `host_id` column in `cc-provenance-table.csv.gz`
+* `url_id` -- primary key for each URL fetched or refetched. This key can be joined with the `url_id` in the `cc-provenance-20230303.csv.gz` table.
+* `file_name` -- name of the PDF file as our project named it inside the zip. This value is not unique in this table because a given PDF (as identified by its sha256) may have been fetched from multiple URLs.
 * `host` -- host
 * `tld` -- top level domain
 * `ip_address` -- as retrieved from Common Crawl or captured during refetch
@@ -172,8 +178,7 @@ Jet Propulsion Laboratory, California Institute of Technology.
 
 The research was carried out at the NASA (National Aeronautics and Space Administration) Jet Propulsion Laboratory, 
 California Institute of Technology under a contract with the Defense 
-Advanced Research Projects Agency (DARPA) SafeDocs program. 
-© 2023 California Institute of Technology. Government sponsorship acknowledged.
+Advanced Research Projects Agency (DARPA) SafeDocs program. Government sponsorship acknowledged.
 
 # Constructing the Corpus
 
