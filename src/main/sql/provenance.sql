@@ -1,5 +1,5 @@
 select
---u.id as url_id,
+u.id as url_id,
 lpad(cpr.id::varchar(12), 7, '0')||'.pdf' as file_name,
 u.url, u.digest as cc_digest,
 m.name as cc_http_mime, dm.name as cc_detected_mime,
@@ -17,5 +17,5 @@ left join cc_fetch f on u.id=f.id
 left join cc_fetch_status fs on f.status_id=fs.id
 left join cc_warc_file_name w on u.warc_file_name=w.id
 left join cc_corpus_ids cpr on cpr.digest=f.fetched_digest
-order by cpr.id
-limit 4000
+order by cpr.id, u.id
+limit 1000

@@ -207,12 +207,18 @@ public class PackageToZip {
                 return;
             }
             Path zip = zipDir.resolve(zipName);
+            long zipSize = Files.size(zip);
             LOGGER.info("about to copy " + zip);
+            String zipSha = "";
+            try (InputStream is = Files.newInputStream(zip)) {
+                zipSha = DigestUtils.sha256Hex(is);
+            }
+            LOGGER.info("zip={} length={} sha256={}", zipName, zipSize, zipSha);
             String targetPath = packageConfig.getTargPrefix();
             if (targetPath.length() > 0 && !targetPath.endsWith("/")) {
                 targetPath += "/";
             }
-            targetPath += zipName;
+            targetPath += "zips/" + zipName.charAt(0) + "/" + zipName;
             LOGGER.info("writing {}", targetPath);
             PutObjectRequest putObjectRequest =
                     new PutObjectRequest(packageConfig.getTargBucket(), targetPath, zip.toFile());
