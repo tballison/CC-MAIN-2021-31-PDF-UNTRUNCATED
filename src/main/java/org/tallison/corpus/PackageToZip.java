@@ -71,6 +71,7 @@ public class PackageToZip {
             } catch (Exception e) {
                 LOGGER.error("fatal error", e);
                 ex.shutdownNow();
+                System.exit(1);
             }
         }
 
@@ -154,13 +155,35 @@ public class PackageToZip {
 
 
         private void processSql(PackageConfig packageConfig, int zip)
-                throws SQLException, IOException {
+                throws Exception {
+            int tries = 0;
+            Exception ex = null;
+            while (tries++ < 3) {
+                try {
+                    tryToCreateZip(packageConfig, zip);
+                    return;
+                } catch (Exception e) {
+                    //if there was a db connectivity issue or something else
+                    //wait a minute and hope for the best.
+                    LOGGER.warn("Problem processing " + zip +
+                        " on try=" + tries, e);
+                    Thread.sleep(60000);
+                    ex = e;
+                }
+            }
+            throw ex;
+        }
+
+        private void tryToCreateZip(PackageConfig packageConfig, int zip)
+            throws Exception {
             String sql = packageConfig.getSelectString();
             int pdfIdFrom = zip * 1000;
             int pdfIdTo = zip * 1000 + 1000;
             sql += " where id >= " + pdfIdFrom + " and id < " + pdfIdTo + " order by id asc";
             Path zipDir = Paths.get(packageConfig.getZipDir());
-            try (Connection connection = DriverManager.getConnection(
+
+            try (Connection connection =
+                DriverManager.getConnection(
                     packageConfig.getDbConnectionString())) {
                 try (Statement st = connection.createStatement()) {
                     String zipName = null;
