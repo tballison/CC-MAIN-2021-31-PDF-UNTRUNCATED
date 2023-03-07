@@ -45,8 +45,8 @@ This corpus is thus useful for:
 
 
 # Packaging
-Each of the 7,932 zip files contains 1,000 PDF files -- except the last, obviously (see also the [Errata](errata) section below).
-We have removed duplicates (based on SHA-256 hash of the PDF file) -- there are 8.3 million URLs for which we have a PDF file, and there are 7.9 million unique PDF files.
+With a few exceptions, each of the 7,933 zip files contains 1,000 PDF files (see the [Errata](errata) section below).
+We have removed duplicates (based on the SHA-256 hash of each PDF file) -- there are 8.3 million URLs for which we have a PDF file, and there are 7.9 million unique PDF files.
 All files are named using a 7-digit number with a `.pdf` extension (e.g. `0000000.pdf`, `0000001.pdf` through `7932877.pdf`) -- the file number is arbitrary in this corpus.  
 Each zip file is around slightly more than 1 GB. Uncompressed, the entire corpus takes up nearly 8 TB.
 
@@ -54,9 +54,13 @@ Each zip file is around slightly more than 1 GB. Uncompressed, the entire corpus
 We include tables to link each PDF file back to the original Common Crawl record in the `CC-MAIN-2021-31` dataset and to
 offer a richer view of the data via extracted metadata. These are placed in the `metadata/` directory.
 
+For each table, we include the full table as a gzipped, UTF-8 encoded, CSV (e.g. `cc-provenance-20230303.csv.gz`).
+We also include an uncompressed copy of the table with only the first 1000 rows so that users may easily familiarize 
+themselves with a smaller portion of the data (e.g. `cc-provenance-20230303-1k.csv`).
+
 ## Crawl Data
-The table `cc-provenance-20230303.csv.gz` contains all provenance information.  We
-have included a 1k row sample of this data in `cc-provenance-20230303.csv.gz`.
+The table `cc-provenance-20230303.csv.gz` contains all provenance information from the crawl (8,410,704 rows, including the header). 
+
 * `url_id` -- primary key for each URL fetched or refetched
 * `file_name` -- name of the PDF file as our project named it inside the zip. This value is not unique in this table because a given PDF (as identified by its sha256) may have been fetched from multiple URLs.
 * `url` -- target url extracted from Common Crawl's index files. Max length in this set is 6,771 characters.
@@ -117,8 +121,8 @@ have included a 1k row sample of this data in `cc-provenance-20230303.csv.gz`.
 |application/gzip|    	76     |
 
 ## Hosts
-The `cc-hosts-20230303.csv.gz` contains information about the hosts and, where possible
-the geographic location of the host for each PDF.
+The `cc-hosts-20230303.csv.gz` contains information about the hosts and, where possible,
+the geographic location of the host for each PDF (8,410,704 rows, including the header).
 The columns include:
 
 * `url_id` -- primary key for each URL fetched or refetched. This key can be joined with the `url_id` in the `cc-provenance-20230303.csv.gz` table.
