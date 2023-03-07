@@ -27,10 +27,7 @@ import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -231,10 +228,14 @@ public class PackageToZip {
             long zipSize = Files.size(zip);
             LOGGER.info("about to copy " + zip);
             String zipSha = "";
+            String zipMd5 = "";
             try (InputStream is = Files.newInputStream(zip)) {
                 zipSha = DigestUtils.sha256Hex(is);
             }
-            LOGGER.info("zip={} length={} sha256={}", zipName, zipSize, zipSha);
+            try (InputStream is = Files.newInputStream(zip)) {
+                zipMd5 = DigestUtils.md5Hex(is);
+            }
+            LOGGER.info("zip={} length={} sha256={} md5={}", zipName, zipSize, zipSha, zipMd5);
             if (packageConfig.isDryRun()) {
                 return;
             }
@@ -247,8 +248,10 @@ public class PackageToZip {
             PutObjectRequest putObjectRequest =
                     new PutObjectRequest(packageConfig.getTargBucket(), targetPath, zip.toFile());
 
-            writeClient.putObject(putObjectRequest);
-            LOGGER.info("successfully wrote: {}", targetPath);
+            PutObjectResult result = writeClient.putObject(putObjectRequest);
+
+            LOGGER.info("successfully wrote: {} local_md5={} aws_md5={}", targetPath,
+                zipMd5, result.getContentMd5());
 
             if (packageConfig.isDeleteLocalZips()) {
                 try {
