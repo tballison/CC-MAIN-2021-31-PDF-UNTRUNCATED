@@ -226,9 +226,7 @@ public class PackageToZip {
             LOGGER.info("about to finish zip {}", zipName);
             aos.finish();
             aos.close();
-            if (packageConfig.isDryRun()) {
-                return;
-            }
+
             Path zip = zipDir.resolve(zipName);
             long zipSize = Files.size(zip);
             LOGGER.info("about to copy " + zip);
@@ -237,11 +235,14 @@ public class PackageToZip {
                 zipSha = DigestUtils.sha256Hex(is);
             }
             LOGGER.info("zip={} length={} sha256={}", zipName, zipSize, zipSha);
+            if (packageConfig.isDryRun()) {
+                return;
+            }
             String targetPath = packageConfig.getTargPrefix();
             if (targetPath.length() > 0 && !targetPath.endsWith("/")) {
                 targetPath += "/";
             }
-            targetPath += "zips/" + zipName.charAt(0) + "/" + zipName;
+            targetPath += "zipfiles/" + zipName;
             LOGGER.info("writing {}", targetPath);
             PutObjectRequest putObjectRequest =
                     new PutObjectRequest(packageConfig.getTargBucket(), targetPath, zip.toFile());

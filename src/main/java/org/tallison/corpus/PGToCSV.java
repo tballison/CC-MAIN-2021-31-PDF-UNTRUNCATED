@@ -29,17 +29,15 @@ public class PGToCSV {
     private static final int MAX_CELL_LENGTH = 32000;
     public static void main(String[] args) throws Exception {
         String connectionString = args[0];
-        String sql = """
-select
-u.id as url_id,
-lpad(cpr.id::varchar(12), 7, '0')||'.pdf' as file_name,
-h.host, tld, ip_address, country, latitude, longitude
-from cc_urls u
-left join cc_fetch f on u.id=f.id
-left join cc_corpus_ids cpr on cpr.digest=f.fetched_digest
-left join cc_hosts h on h.id=u.host
-order by cpr.id, u.id
-                """;
+        String sql = "select" +
+                    " u.id as url_id," +
+" lpad(cpr.id::varchar(12), 7, '0')||'.pdf' as file_name," +
+" h.host, tld, ip_address, country, latitude, longitude" +
+" from cc_urls u" +
+" left join cc_fetch f on u.id=f.id" +
+" left join cc_corpus_ids cpr on cpr.digest=f.fetched_digest" +
+" left join cc_hosts h on h.id=u.host" +
+" order by cpr.id, u.id ";
         Path csvRoot = Paths.get("/Users/allison/data/cc/csv_tables/");
         Files.createDirectories(csvRoot);
         Path csv = csvRoot.resolve("hosts_20230303.csv.gz");
