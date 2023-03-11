@@ -156,11 +156,10 @@ TBD
 TBD
 
 # Related Work
-* Allison, Timothy. "Making more sense of PDF structures in the wild at scale." 
-PDF Days Europe 2022, September 12-13, 2022.
-* Allison, Timothy. "Building a File Observatory: Making sense of PDFs in the Wild". 
-Open Preservation Foundation Webinar, January 19, 2022.
-* Allison, Timothy. "Making sense of PDF structures in the wild at scale". PDF Days Online 2021, September 29, 2021.
+* Allison, Timothy. "_Making more sense of PDF structures in the wild at scale._" PDF Days Europe 2022, September 12-13, 2022. [Video and slide deck](https://www.pdfa.org/presentation/making-more-sense-of-pdf-structures-in-the-wild-at-scale/).
+* Allison, Timothy. "_Building a File Observatory: Making sense of PDFs in the Wild_". Open Preservation Foundation Webinar, January 19, 2022.
+* Allison, Timothy. "_Making sense of PDF structures in the wild at scale_". PDF Days Online 2021, September 29, 2021. [Video and slide deck](https://www.pdfa.org/presentation/making-sense-of-pdf-structures-in-the-wild-at-scale/).
+* Allison, Timothy; Burke, Wayne; Mattmann, Chris; Menshikova, Anastasia; Southam, Philip; Stonebraker, Ryan; and Timmaraju, Virisha, "_Building a Wide Reach Corpus for Secure Parser Development_", IEEE Security & Privacy LangSec Worshop, May 21, 2020.  [Slides and paper](http://spw20.langsec.org/papers.html#corpus).
 
 
 # Credits
