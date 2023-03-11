@@ -6,7 +6,7 @@ The PDF files were initially identified by [Common Crawl](https://commoncrawl.or
 their July/August 2021 crawl (identified as `CC-MAIN-2021-31`) and subsequently updated and collated as part of the [DARPA SafeDocs program](https://www.darpa.mil/program/safe-documents).
 
 This current corpus offers five benefits over Common Crawl datasets as stored in 
-[Amazon Public Datasets](https://registry.opendata.aws/commoncrawl/).
+[Amazon Public Datasets](https://registry.opendata.aws/commoncrawl/):
 
 1. Common Crawl truncates files at 1MB. For this corpus, we refetched the complete/untruncated PDF files from the original URLs without any file size limitation.
 2. This corpus offers a tractable subset of the files, focusing on a single format: PDF.
@@ -18,8 +18,8 @@ It is not possible to rigorously assess how representative this corpus is of PDF
 It is [well known](https://www.youtube.com/watch?v=5Af3IC5WxPo) that a significant number of PDF files lie within private intranets or repositories, behind log ins, and 
 are not made publicly accessible due to PII or other confidential content.
 This means that all corpora created by web crawling may not adequately represent every PDF feature or capability.
-Even as web crawls go, preliminary analysis suggests that Common Crawl data should be viewed as a convenience sample.  
-In short, the crawls (and this corpus) may not be representative nor complete, but they do offer a large set of data from the publicly accessible web.
+Even as web crawls go, preliminary analysis suggests that Common Crawl data can be viewed as a convenience sample.  
+In short, the crawls (and this corpus) may not be fully representative nor complete, but they do offer a reliable large set of data from the publicly accessible web.
 
 For the specific `CC-MAIN-2021-31` crawl, the Common Crawl project [writes](https://commoncrawl.org/2021/08/july-august-2021-crawl-archive-available/):
 
@@ -45,14 +45,15 @@ This corpus is thus useful for:
 
 
 # Packaging
-With a few exceptions, each of the 7,933 zip files contains 1,000 PDF files (see the [Errata](errata) section below).
+With a few exceptions, each of the 7,933 zip files in the `zipfiles/` subdirectory contains 1,000 PDF files (see the [Errata](#errata) section below).
 We have removed duplicates (based on the SHA-256 hash of each PDF file) -- there are 8.3 million URLs for which we have a PDF file, and there are 7.9 million unique PDF files.
 All files are named using a 7-digit number with a `.pdf` extension (e.g. `0000000.pdf`, `0000001.pdf` through `7932877.pdf`) -- the file number is arbitrary in this corpus.  
+
 Each zip file is around slightly more than 1 GB. Uncompressed, the entire corpus takes up nearly 8 TB.
 
 # Supplementary Metadata
 We include tables to link each PDF file back to the original Common Crawl record in the `CC-MAIN-2021-31` dataset and to
-offer a richer view of the data via extracted metadata. These are placed in the `metadata/` directory.
+offer a richer view of the data via extracted metadata. These are placed in the `metadata/` subdirectory.
 
 For each table, we include the full table as a gzipped, UTF-8 encoded, CSV (e.g. `cc-provenance-20230303.csv.gz`).
 We also include an uncompressed copy of the table with only the first 1000 rows so that users may easily familiarize 
@@ -65,8 +66,8 @@ The table `cc-provenance-20230303.csv.gz` contains all provenance information fr
 * `file_name` -- name of the PDF file as our project named it inside the zip. This value is not unique in this table because a given PDF (as identified by its sha256) may have been fetched from multiple URLs.
 * `url` -- target url extracted from Common Crawl's index files. Max length in this set is 6,771 characters.
 * `cc_digest` -- digest calculated by Common Crawl and extracted from the index files
-* `cc_http_mime` -- MIME as extracted from Common Crawl's index files -- this derives from the http header
-* `cc_detected_mime` -- the detected MIME as extracted from Common Crawl's index files.
+* `cc_http_mime` -- MIME as extracted from Common Crawl's index files -- this is derived from the http header
+* `cc_detected_mime` -- the detected MIME, as extracted from Common Crawl's index files.
 * `cc_warc_file_name` -- the Common Crawl warc file where the file's individual warc file is stored
 * `cc_warc_start` -- the offset within the `cc_warc_file` where the individual warc file is stored
 * `cc_warc_end` -- this is the end of the individual warc file within the larger `cc_warc_file`
@@ -170,7 +171,7 @@ Wayne Burke, Dustin Graf, Tim Allison, Ryan Stonebraker, Mike Milano,
 Philip Southam and Anastasia Menshikova.
 
 The JPL team collaborated with Peter Wyatt, the Chief Technology Officer 
-of the PDF Association and PI on the SafeDocs program, in the design and documentation of the corpus.
+of the PDF Association and PI on the SafeDocs program, in the design and documentation of this corpus.
 
 The JPL team and PDF Association would like to thank Simson Garfinkel and Digital Corpora for taking ownership of this dataset and publishing it.
 Our thanks are extended to the [Amazaon Open Data Sponsorship Program](https://aws.amazon.com/opendata/open-data-sponsorship-program/) for enabling this large corpus to be free and publicly available as part of Digital Corpora initiative. 
@@ -214,7 +215,7 @@ We sorted the files by `sha-256` and then numbered them from 0 (`0000000.pdf`) t
 8 million (`7932877.pdf`).  We added a `.pdf` file extension to every file.
 
 # Errata 
-We are aware that the following files are missing from the corpus. There were sporadic S3 write exceptions during the fetching 
+We are aware that the following PDFs are missing from the corpus. There were caused by sporadic S3 write exceptions during the fetching 
 and refetching.
 
 | File name  | sha256                                                           |
