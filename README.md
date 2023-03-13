@@ -173,7 +173,7 @@ The JPL team collaborated with Peter Wyatt, the Chief Technology Officer
 of the PDF Association and PI on the SafeDocs program, in the design and documentation of this corpus.
 
 The JPL team and PDF Association would like to thank Simson Garfinkel and Digital Corpora for taking ownership of this dataset and publishing it.
-Our thanks are extended to the [Amazaon Open Data Sponsorship Program](https://aws.amazon.com/opendata/open-data-sponsorship-program/) for enabling this large corpus to be free and publicly available as part of Digital Corpora initiative. 
+Our thanks are extended to the [Amazon Open Data Sponsorship Program](https://aws.amazon.com/opendata/open-data-sponsorship-program/) for enabling this large corpus to be free and publicly available as part of Digital Corpora initiative. 
 
 Reference herein to any specific commercial product, process, or service 
 by trade name, trademark, manufacturer, or otherwise, does not constitute 
