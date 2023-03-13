@@ -1,7 +1,7 @@
 # CC-MAIN-2021-31-PDF-UNTRUNCATED 
 
 # Overview
-This corpus contains nearly 8 million PDFs gathered from the across the web in July/August of 2021. 
+This corpus contains nearly 8 million PDFs gathered from across the web in July/August of 2021. 
 The PDF files were initially identified by [Common Crawl](https://commoncrawl.org/) as part of 
 their July/August 2021 crawl (identified as `CC-MAIN-2021-31`) and subsequently updated and collated as part of the [DARPA SafeDocs program](https://www.darpa.mil/program/safe-documents).
 
@@ -14,8 +14,8 @@ This current corpus offers five benefits over Common Crawl datasets as stored in
 4. All PDF files (both Common Crawl <1MB PDFs and the larger truncated PDFs that were refetched) are conveniently packaged in the zip format. This is the same as [GovDocs1](https://digitalcorpora.org/corpora/files/).
 5. At the time of its creation, this is the largest single corpus of real-world (extant) PDFs that is publicly available. Many other [smaller, targeted or synthetic PDF-centric corpora](https://github.com/pdf-association/pdf-corpora) exist. 
 
-It is not possible to rigorously assess how representative this corpus is of PDF files across the entire the web or of PDF files in general. 
-It is [well known](https://www.youtube.com/watch?v=5Af3IC5WxPo) that a significant number of PDF files lie within private intranets or repositories, behind log ins, and 
+It is not possible to rigorously assess how representative this corpus is of PDF files across the entire web or of PDF files in general. 
+It is [well known](https://www.youtube.com/watch?v=5Af3IC5WxPo) that a significant number of PDF files lie within private intranets or repositories, behind logins, and 
 are not made publicly accessible due to PII or other confidential content.
 This means that all corpora created by web crawling may not adequately represent every PDF feature or capability.
 Even as web crawls go, preliminary analysis suggests that Common Crawl data can be viewed as a convenience sample.  
