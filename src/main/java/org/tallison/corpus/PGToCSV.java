@@ -29,18 +29,26 @@ public class PGToCSV {
     private static final int MAX_CELL_LENGTH = 32000;
     public static void main(String[] args) throws Exception {
         String connectionString = args[0];
-        String sql = "select" +
-                    " u.id as url_id," +
-" lpad(cpr.id::varchar(12), 7, '0')||'.pdf' as file_name," +
-" h.host, tld, ip_address, country, latitude, longitude" +
-" from cc_urls u" +
-" left join cc_fetch f on u.id=f.id" +
-" left join cc_corpus_ids cpr on cpr.digest=f.fetched_digest" +
-" left join cc_hosts h on h.id=u.host" +
-" order by cpr.id, u.id ";
-        Path csvRoot = Paths.get("/Users/allison/data/cc/csv_tables/");
+        String sql =  "select u.id as url_id, \n" +
+                "lpad(c.id::varchar, 7, '0') || '.pdf' as file_name, parse_time_millis, exit_value, \n" +
+                "case \n" +
+                "\twhen timeout = false\n" +
+                "\tthen 'false'\n" +
+                "\telse 'true'\n" +
+                "\tend as timeout, \n" +
+                "stderr,\n" +
+                "pdf_version, creator, producer, created, modified, custom_metadata,\n" +
+                "metadata_stream, tagged, user_properties, form, javascript,\n" +
+                "pages, page_size, page_rotation, optimized\n" +
+                "from cc_urls u\n" +
+                "left join cc_fetch f on u.id=f.id\n" +
+                "left join pdfinfo2 p on p.path=f.path\n" +
+                "left join cc_corpus_ids c on c.digest=p.digest\n" +
+                "order by c.id, u.id\n" +
+                "--limit 1000";
+        Path csvRoot = Paths.get("/Users/allison/data/cc/csv_tables/metadata");
         Files.createDirectories(csvRoot);
-        Path csv = csvRoot.resolve("hosts_20230303.csv.gz");
+        Path csv = csvRoot.resolve("pdfinfo-20230315.csv.gz");
         int rows = 0;
 
         try (Connection connection = DriverManager.getConnection(connectionString)) {
@@ -70,7 +78,11 @@ public class PGToCSV {
     }
 
     private static BufferedWriter getWriter(Path csv) throws IOException {
-        OutputStream os = new GzipCompressorOutputStream(Files.newOutputStream(csv));
+
+        OutputStream os = Files.newOutputStream(csv);
+        if (csv.getFileName().toString().endsWith(".gz")) {
+            os = new GzipCompressorOutputStream(os);
+        }
         return new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
     }
 

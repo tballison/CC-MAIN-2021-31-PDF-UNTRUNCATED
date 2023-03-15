@@ -150,7 +150,38 @@ Of the 8.3 million URLs for which we have a file, the counts for the top 10 coun
 
 
 ## PDFInfo
-TBD
+The `pdfinfo-20230315.csv.gz` contains output from `pdfinfo` ([poppler](https://poppler.freedesktop.org/) version=23.03.0, data version=0.4.12).
+We ran this in a Docker container based on `debian:bullseye-20230227-slim` with the `-isodates` flag and a timeout of 2 minutes.
+
+* `url_id` -- primary key for each URL fetched or refetched. This key can be joined with the `url_id` in the `cc-provenance-20230303.csv.gz` table.
+* `file_name` -- name of the PDF file as our project named it inside the zip. This value is not unique in this table because a given PDF (as identified by its sha256) may have been fetched from multiple URLs.
+* `parse_time_millis` -- milliseconds to process the file
+* `exit_value` -- exit value for the `pdfinfo` process
+* `timeout` -- boolean for whether or not the process timed out (`exit_value`= -1 in the 2 records where this happens)
+* `stderr` -- stderr stream from `pdfinfo` (limited to first 1,024 characters)
+* `pdf_version` -- pdf version as extracted by `pdfinfo`
+* `creator` -- creator tool (limited to first 1,024 characters)
+* `producer` -- producer (limited to first 1,024 characters)
+* `created` -- date created (format: 2021-06-11T17:42:51+08 or 2021-07-31T19:31:14Z)
+* `modified` -- date modified (format: 2021-06-11T17:42:51+08 or 2021-07-31T19:31:14Z)
+* `custom_metadata` -- whether or not there is custom metadata
+* `metadata_stream` -- whether or not there is a metadata stream
+* `tagged` -- whether the PDF contains tags
+* `user_properties` -- contains user properties
+* `form` -- contains form, acroform, 'null' and ''
+* `javascript` -- contains javascript
+* `pages` -- number of pages
+* `page_size` -- string representing page size
+* `page_rotation` -- page rotation
+* `optimized` -- optimized
+
+| Exit Value | Count  | Notes                                                                 |
+|----------|------------|-----------------------------------------------------------------------|
+|0| 	7,893,956 | Completed normally                                                    |
+|1| 	37,692    | May not be a PDF file (21,837), Encrypted file (4,295), other problem |
+|99| 	1,185     | Wrong page range given (1,095) typically page tree has 0 pages?!      |
+|-1	| 2          | timeout                                                               |
+|1| null       | 0 byte file                                                           |
 
 ## Apache Tika
 TBD

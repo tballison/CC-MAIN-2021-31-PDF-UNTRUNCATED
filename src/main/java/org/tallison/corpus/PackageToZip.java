@@ -243,7 +243,7 @@ public class PackageToZip {
             if (targetPath.length() > 0 && !targetPath.endsWith("/")) {
                 targetPath += "/";
             }
-            targetPath += "zipfiles/" + zipName;
+            targetPath += "zipfiles/" + zipName.charAt(0) + "/" + zipName;
             LOGGER.info("writing {}", targetPath);
             PutObjectRequest putObjectRequest =
                     new PutObjectRequest(packageConfig.getTargBucket(), targetPath, zip.toFile());
