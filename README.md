@@ -14,7 +14,7 @@ This current corpus offers five benefits over Common Crawl datasets as stored in
 4. All PDF files (both Common Crawl <1MB PDFs and the larger truncated PDFs that were refetched) are conveniently packaged in the zip format. This is the same as [GovDocs1](https://digitalcorpora.org/corpora/files/).
 5. At the time of its creation, this is the largest single corpus of real-world (extant) PDFs that is publicly available. Many other [smaller, targeted or synthetic PDF-centric corpora](https://github.com/pdf-association/pdf-corpora) exist. 
 
-It is not possible to rigorously assess how representative this corpus is of PDF files across the entire web or of PDF files in general. 
+It is not possible to rigorously assess how representative this corpus is of all PDF files on the entire web or of PDF files in general. 
 It is [well known](https://www.youtube.com/watch?v=5Af3IC5WxPo) that a significant number of PDF files lie within private intranets or repositories, behind logins, and 
 are not made publicly accessible due to PII or other confidential content.
 This means that all corpora created by web crawling may not adequately represent every PDF feature or capability.
@@ -45,11 +45,11 @@ This corpus is thus useful for:
 
 
 # Packaging
-With a few exceptions, each of the 7,933 zip files in the `zipfiles/` subdirectory contains 1,000 PDF files (see the [Errata](#errata) section below).
+With a few exceptions, each of the 7,933 ZIP files in the `zipfiles/` subdirectory tree contains 1,000 PDF files (see the [Errata](#errata) section below).
 We have removed duplicates (based on the SHA-256 hash of each PDF file) -- there are 8.3 million URLs for which we have a PDF file, and there are 7.9 million unique PDF files.
-All files are named using a 7-digit number with a `.pdf` extension (e.g. `0000000.pdf`, `0000001.pdf` through `7932877.pdf`) -- the file number is arbitrary in this corpus.  
+All PDF files are named using a sequential 7-digit number with a `.pdf` extension (e.g. `0000000.pdf`, `0000001.pdf` through `7932877.pdf`) -- the file number is arbitrary in this corpus as it is based on the SHA-256 of the PDF.  Each ZIP is also sequentially numbered and stored in a subdirectory below `zipfiles/` where each subdirectory is limited to 1,000 ZIP files: `zipfiles/0000-0999/`, `zipfiles/1000-1999/`, etc.  
 
-Each zip file is around slightly more than 1 GB. Uncompressed, the entire corpus takes up nearly 8 TB.
+Each ZIP file is around slightly more than 1 GB. Uncompressed, the entire corpus takes up nearly 8 TB.
 
 # Supplementary Metadata
 We include tables to link each PDF file back to the original Common Crawl record in the `CC-MAIN-2021-31` dataset and to
