@@ -45,11 +45,13 @@ This corpus is thus useful for:
 
 
 # Packaging
-With a few exceptions, each of the 7,933 ZIP files in the `zipfiles/` subdirectory tree contains 1,000 PDF files (see the [Errata](#errata) section below).
-We have removed duplicates (based on the SHA-256 hash of each PDF file) -- there are 8.3 million URLs for which we have a PDF file, and there are 7.9 million unique PDF files.
-All PDF files are named using a sequential 7-digit number with a `.pdf` extension (e.g. `0000000.pdf`, `0000001.pdf` through `7932877.pdf`) -- the file number is arbitrary in this corpus as it is based on the SHA-256 of the PDF.  Each ZIP is also sequentially numbered and stored in a subdirectory below `zipfiles/` where each subdirectory is limited to 1,000 ZIP files: `zipfiles/0000-0999/`, `zipfiles/1000-1999/`, etc.  
+All PDF files are named using a sequential 7-digit number with a `.pdf` extension (e.g. `0000000.pdf`, `0000001.pdf` through `7932877.pdf`) - the file number is arbitrary in this corpus as it is based on the SHA-256 of the PDF.  Duplicate PDF files (based on the SHA-256 hash of the file) have been removed - there are 8.3 million URLs for which we have a PDF file, and there are 7.9 million unique PDF files. 
 
-Each ZIP file is around slightly more than 1 GB. Uncompressed, the entire corpus takes up nearly 8 TB.
+PDF files are then packaged into ZIP files based on their sequentially numbered filename, with each ZIP file containing up to 1,000 PDF files (less if duplicates were detected and removed). The resulting ZIP files range in size from just under 1.0 GB to about 1.6 GB. With a few exceptions, all of the 7,933 ZIP files in the `zipfiles/` subdirectory tree contains 1,000 PDF files (see the [Errata](#errata) section below).
+
+Each ZIP is named using a sequential 4-digit number representing the high 4 digits of the 7-digit PDF files in the ZIP - so `0000.zip` contains all PDFs numbered from `0000000.pdf` to `0000999.pdf`, `0001.zip` contains PDFs numbered from `0001000.pdf` to `0001999.pdf`, etc. ZIP files are clustered into groups of 1,000 and stored in subdirectories below `zipfiles/` based on the 4-digit ZIP filename, where each subdirectory is limited to 1,000 ZIP files: `zipfiles/0000-0999/`, `zipfiles/1000-1999/`, etc.  
+
+The entire corpus when uncompressed takes up nearly 8 TB.
 
 # Supplementary Metadata
 We include tables to link each PDF file back to the original Common Crawl record in the `CC-MAIN-2021-31` dataset and to
