@@ -17,5 +17,6 @@ left join cc_fetch f on u.id=f.id
 left join cc_fetch_status fs on f.status_id=fs.id
 left join cc_warc_file_name w on u.warc_file_name=w.id
 left join cc_corpus_ids cpr on cpr.digest=f.fetched_digest
+--optional 1k file limit
+where cpr.id < 1000
 order by cpr.id, u.id
-limit 1000

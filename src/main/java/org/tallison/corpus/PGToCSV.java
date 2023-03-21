@@ -29,26 +29,21 @@ public class PGToCSV {
     private static final int MAX_CELL_LENGTH = 32000;
     public static void main(String[] args) throws Exception {
         String connectionString = args[0];
-        String sql =  "select u.id as url_id, \n" +
-                "lpad(c.id::varchar, 7, '0') || '.pdf' as file_name, parse_time_millis, exit_value, \n" +
-                "case \n" +
-                "\twhen timeout = false\n" +
-                "\tthen 'false'\n" +
-                "\telse 'true'\n" +
-                "\tend as timeout, \n" +
-                "stderr,\n" +
+        String sql =  "select u.id as url_id,\n" +
+                "lpad(cpr.id::varchar, 7, '0') || '.pdf' as file_name, parse_time_millis, exit_value, timeout, stderr,\n" +
                 "pdf_version, creator, producer, created, modified, custom_metadata,\n" +
                 "metadata_stream, tagged, user_properties, form, javascript,\n" +
                 "pages, page_size, page_rotation, optimized\n" +
                 "from cc_urls u\n" +
                 "left join cc_fetch f on u.id=f.id\n" +
                 "left join pdfinfo2 p on p.path=f.path\n" +
-                "left join cc_corpus_ids c on c.digest=p.digest\n" +
-                "order by c.id, u.id\n" +
-                "--limit 1000";
+                "left join cc_corpus_ids cpr on cpr.digest=p.digest\n" +
+                "--optional 1k file limit\n" +
+                "where cpr.id < 1000\n" +
+                "order by cpr.id, u.id";
         Path csvRoot = Paths.get("/Users/allison/data/cc/csv_tables/metadata");
         Files.createDirectories(csvRoot);
-        Path csv = csvRoot.resolve("pdfinfo-20230315.csv.gz");
+        Path csv = csvRoot.resolve("pdfinfo-20230321-1k.csv");
         int rows = 0;
 
         try (Connection connection = DriverManager.getConnection(connectionString)) {

@@ -58,8 +58,12 @@ We include tables to link each PDF file back to the original Common Crawl record
 offer a richer view of the data via extracted metadata. These are placed in the `metadata/` subdirectory.
 
 For each table, we include the full table as a gzipped, UTF-8 encoded, CSV (e.g. `cc-provenance-20230303.csv.gz`).
-We also include an uncompressed copy of the table with only the first 1000 rows so that users may easily familiarize 
-themselves with a smaller portion of the data (e.g. `cc-provenance-20230303-1k.csv`).
+
+We also include an uncompressed copy of the table with only the first 1000 files so that users may easily familiarize 
+themselves with a smaller portion of the data (e.g. `cc-provenance-20230321-1k.csv`).  Note that there are 1,045 data
+rows in these `*-1k.csv` tables because the tables are URL-based -- the same PDF may have come
+from multiple URLs.  For example, `0000374.pdf` was retrieved from five URLs, and it appears
+five times in these tables.
 
 ## Crawl Data
 The table `cc-provenance-20230303.csv.gz` contains all provenance information from the crawl (8,410,704 rows, including the header). 
