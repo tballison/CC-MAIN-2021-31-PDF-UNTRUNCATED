@@ -59,11 +59,12 @@ offer a richer view of the data via extracted metadata. These are placed in the 
 
 For each table, we include the full table as a gzipped, UTF-8 encoded, CSV (e.g. `cc-provenance-20230303.csv.gz`).
 
-We also include an uncompressed copy of the table with only the first 1000 files so that users may easily familiarize 
-themselves with a smaller portion of the data (e.g. `cc-provenance-20230321-1k.csv`).  Note that there are 1,045 data
-rows in these `*-1k.csv` tables because the tables are URL-based -- the same PDF may have come
-from multiple URLs.  For example, `0000374.pdf` was retrieved from five URLs, and it appears
-five times in these tables.
+We also include an uncompressed copy of each metadata table with the data relevant to `0000.zip` so that users may easily familiarize 
+themselves with a smaller portion of the data (e.g. `cc-provenance-20230321-1k.csv`). Note that there are 1,045 data rows in these `*-1k.csv` tables because these tables are URL-based -- the same PDF may have come from multiple URLs. For example, `0000374.pdf` was retrieved from five URLs, so it appears five times in these tables.
+
+Further note that due to Unicode-encoded metadata, the `*-1k.csv` tables have a UTF-8 [Byte Order Marker (BOM)](https://en.wikipedia.org/wiki/Byte_order_mark) prepended so that they may easily be opened by spreadsheet applications (such as Microsoft Excel) by double-clicking, and not result in [mojibake](https://en.wikipedia.org/wiki/Mojibake). This is because such applications will not prompt for an encoding when opening CSV files directly - the prompts for delimiters and encoding only occur if manually importing the data into these spreadsheet applications.
+
+The very large gzipped metadata CSV files for the entire corpus do **NOT** have UTF-8 BOMs added as these are not directly usable by office applications.
 
 ## Crawl Data
 The table `cc-provenance-20230303.csv.gz` contains all provenance information from the crawl (8,410,704 rows, including the header). 
@@ -165,21 +166,21 @@ We ran this in a Docker container based on `debian:bullseye-20230227-slim` with 
 * `exit_value` -- exit value for the `pdfinfo` process
 * `timeout` -- boolean for whether or not the process timed out (`exit_value`= -1 in the 2 records where this happens)
 * `stderr` -- stderr stream from `pdfinfo` (limited to first 1,024 characters)
-* `pdf_version` -- pdf version as extracted by `pdfinfo`
-* `creator` -- creator tool (limited to first 1,024 characters)
-* `producer` -- producer (limited to first 1,024 characters)
-* `created` -- date created (format: 2021-06-11T17:42:51+08 or 2021-07-31T19:31:14Z)
-* `modified` -- date modified (format: 2021-06-11T17:42:51+08 or 2021-07-31T19:31:14Z)
-* `custom_metadata` -- whether or not there is custom metadata
-* `metadata_stream` -- whether or not there is a metadata stream
-* `tagged` -- whether the PDF contains tags
-* `user_properties` -- contains user properties
-* `form` -- contains form, acroform, 'null' and ''
-* `javascript` -- contains javascript
-* `pages` -- number of pages
-* `page_size` -- string representing page size
-* `page_rotation` -- page rotation
-* `optimized` -- optimized
+* `pdf_version` -- PDF version from the header comment line at the start of the PDF file
+* `creator` -- PDF creator tool from Document Information dictionary (limited to first 1,024 characters)
+* `producer` -- PDF producer from Document Information dictionary (limited to first 1,024 characters)
+* `created` -- date created from Document Information dictionary in ISO-8601 format (format: 2021-06-11T17:42:51+08 or 2021-07-31T19:31:14Z)
+* `modified` -- date modified from Document Information dictionary in ISO-8601 format (format: 2021-06-11T17:42:51+08 or 2021-07-31T19:31:14Z)
+* `custom_metadata` -- whether or not there is custom metadata (non-standard keys in the Document Information dictionary)
+* `metadata_stream` -- whether or not there is an XMP Metadata stream (Document Catalog Metadata key)
+* `tagged` -- whether the PDF is a Tagged PDF (Mark Information dictionary Marked key)
+* `user_properties` -- contains user properties (Mark Information dictionary UserProperties key)
+* `form` -- PDF is a form: XFA, AcroForm, 'null' or '' (empty)
+* `javascript` -- PDF contains JavaScript (ECMAscript)
+* `pages` -- number of pages according to the PDF page tree
+* `page_size` -- string representing page size of the first page (in pts, 1/72 inch)
+* `page_rotation` -- the page rotation of the first page (raw, as specified by the Rotate key)
+* `optimized` -- is the PDF file is Linearized (a.k.a. "Fast web view" enabled)
 
 | Exit Value | Count  | Notes                                                                 |
 |----------|------------|-----------------------------------------------------------------------|
