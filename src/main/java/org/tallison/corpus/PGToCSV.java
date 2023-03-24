@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.io.ByteOrderMark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,21 +30,16 @@ public class PGToCSV {
     private static final int MAX_CELL_LENGTH = 32000;
     public static void main(String[] args) throws Exception {
         String connectionString = args[0];
-        String sql =  "select u.id as url_id,\n" +
-                "lpad(cpr.id::varchar, 7, '0') || '.pdf' as file_name, parse_time_millis, exit_value, timeout, stderr,\n" +
-                "pdf_version, creator, producer, created, modified, custom_metadata,\n" +
-                "metadata_stream, tagged, user_properties, form, javascript,\n" +
-                "pages, page_size, page_rotation, optimized\n" +
-                "from cc_urls u\n" +
+        String sql =  "select\n" + "u.id as url_id,\n" +
+                "lpad(cpr.id::varchar(12), 7, '0')||'.pdf' as file_name,\n" +
+                "h.host, tld, ip_address, country, latitude, longitude\n" + "from cc_urls u\n" +
                 "left join cc_fetch f on u.id=f.id\n" +
-                "left join pdfinfo2 p on p.path=f.path\n" +
-                "left join cc_corpus_ids cpr on cpr.digest=p.digest\n" +
-                "--optional 1k file limit\n" +
-                "where cpr.id < 1000\n" +
-                "order by cpr.id, u.id";
+                "left join cc_corpus_ids cpr on cpr.digest=f.fetched_digest\n" +
+                "left join cc_hosts h on h.id=u.host\n" + "--optional 1k file limit\n" +
+                "where cpr.id < 1000\n" + "order by cpr.id, u.id";
         Path csvRoot = Paths.get("/Users/allison/data/cc/csv_tables/metadata");
         Files.createDirectories(csvRoot);
-        Path csv = csvRoot.resolve("pdfinfo-20230321-1k.csv");
+        Path csv = csvRoot.resolve("cc-hosts-20230324-1k.csv");
         int rows = 0;
 
         try (Connection connection = DriverManager.getConnection(connectionString)) {
@@ -77,6 +73,9 @@ public class PGToCSV {
         OutputStream os = Files.newOutputStream(csv);
         if (csv.getFileName().toString().endsWith(".gz")) {
             os = new GzipCompressorOutputStream(os);
+        } else {
+            //add boms only to the 1k files
+            os.write(ByteOrderMark.UTF_8.getBytes());
         }
         return new BufferedWriter(new OutputStreamWriter(os, StandardCharsets.UTF_8));
     }

@@ -60,7 +60,7 @@ offer a richer view of the data via extracted metadata. These are placed in the 
 For each table, we include the full table as a gzipped, UTF-8 encoded, CSV (e.g. `cc-provenance-20230303.csv.gz`).
 
 We also include an uncompressed copy of each metadata table with the data relevant to `0000.zip` so that users may easily familiarize 
-themselves with a smaller portion of the data (e.g. `cc-provenance-20230321-1k.csv`). Note that there are 1,045 data rows in these `*-1k.csv` tables because these tables are URL-based -- the same PDF may have come from multiple URLs. For example, `0000374.pdf` was retrieved from five URLs, so it appears five times in these tables.
+themselves with a smaller portion of the data (e.g. `cc-provenance-20230324-1k.csv`). Note that there are 1,045 data rows in these `*-1k.csv` tables because these tables are URL-based -- the same PDF may have come from multiple URLs. For example, `0000374.pdf` was retrieved from five URLs, so it appears five times in these tables.
 
 Further note that due to Unicode-encoded metadata, the `*-1k.csv` tables have a UTF-8 [Byte Order Marker (BOM)](https://en.wikipedia.org/wiki/Byte_order_mark) prepended so that they may easily be opened by spreadsheet applications (such as Microsoft Excel) by double-clicking, and not result in [mojibake](https://en.wikipedia.org/wiki/Mojibake). This is because such applications will not prompt for an encoding when opening CSV files directly - the prompts for delimiters and encoding only occur if manually importing the data into these spreadsheet applications.
 
@@ -190,12 +190,11 @@ We ran this in a Docker container based on `debian:bullseye-20230227-slim` with 
 |-1	| 2          | timeout                                                               |
 |1| null       | 0 byte file                                                           |
 
-## Apache Tika
-TBD
+
 
 # Related Work
 * Allison, Timothy. "_Making more sense of PDF structures in the wild at scale._" PDF Days Europe 2022, September 12-13, 2022. [Video and slide deck](https://www.pdfa.org/presentation/making-more-sense-of-pdf-structures-in-the-wild-at-scale/).
-* Allison, Timothy. "_Building a File Observatory: Making sense of PDFs in the Wild_". Open Preservation Foundation Webinar, January 19, 2022.
+* Allison, Timothy. "_Building a File Observatory: Making sense of PDFs in the Wild_". Open Preservation Foundation Webinar, January 19, 2022. [Slide deck](https://www.slideshare.net/TimAllison6/building-a-file-observatory-making-sense-of-pdfs-in-the-wild)
 * Allison, Timothy. "_Making sense of PDF structures in the wild at scale_". PDF Days Online 2021, September 29, 2021. [Video and slide deck](https://www.pdfa.org/presentation/making-sense-of-pdf-structures-in-the-wild-at-scale/).
 * Allison, Timothy; Burke, Wayne; Mattmann, Chris; Menshikova, Anastasia; Southam, Philip; Stonebraker, Ryan; and Timmaraju, Virisha, "_Building a Wide Reach Corpus for Secure Parser Development_", IEEE Security & Privacy LangSec Worshop, May 21, 2020.  [Slides and paper](http://spw20.langsec.org/papers.html#corpus).
 
