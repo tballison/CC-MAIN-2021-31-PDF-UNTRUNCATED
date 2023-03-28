@@ -230,7 +230,8 @@ gzipped text files, where each line contains a key to enable easy sorting of URL
 a JSON object that contains metadata about each URL.
 Information in the JSON object includes, among other things: URL, mime, detected mime, and the location of the 
 individual WARC file as specified by the path to the compound WARC and the offset and length of the individual WARC
-file within the compound WARC.  For more details, see [commoncrawl-fetcher-lite](https://github.com/tballison/commoncrawl-fetcher-lite#background).
+file within the compound WARC.  For more details, see
+[commoncrawl-fetcher-lite](https://github.com/tballison/commoncrawl-fetcher-lite#background) page.
 
 ### Common Crawl WARCs
 Common Crawl concatenates gzipped WARCs into very large WARC files (~1GB each).  To fetch
