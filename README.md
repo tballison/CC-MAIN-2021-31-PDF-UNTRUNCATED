@@ -92,8 +92,6 @@ The table `cc-provenance-20230303.csv.gz` contains all provenance information fr
   * `REFETCHED_TIMEOUT` (5,157) -- timeout during our attempted refetch.
   * `REFETCHED_IO_EXCEPTION` (569) -- general IOException while we were trying to refetch.
   * `null` (506) -- ??
-  * `FETCHED_EXCEPTION_EMITTING` (29) -- there was an exception when we tried to write a refetched PDF to S3
-* `fetched_digest` -- the sha256 that we calculated on the bytes that we have for the file
   * `FETCHED_EXCEPTION_EMITTING` (29) -- there was an exception trying to write to S3
 * `fetched_digest` -- the sha256 that we calculated on the bytes that we have for the file, whether fetched from CC or refetched
 * `fetched_length` -- the length in bytes of the file that we extracted from Common Crawl or refetched
@@ -224,15 +222,18 @@ Advanced Research Projects Agency (DARPA) SafeDocs program. Government sponsorsh
 # Constructing the Corpus
 
 ## Types of Common Crawl Data used
-This project used two types of data from Common Crawl
+This project used two types of data from Common Crawl.  For more information on the types of data available for each crawl, see [CommonCrawl's Getting Started](https://commoncrawl.org/the-data/get-started/).
 
 ### Common Crawl indices
 The [indices](https://data.commoncrawl.org/crawl-data/CC-MAIN-2021-31/cc-index.paths.gz) are
-gzipped text files, where each line is a JSON object that contains metadata about each URL.
-Information includes, among other things: URL, mime, detected mime, the CC WARC (Web ARChive) file where the file's warc file exists along with the warc file's offset and length
+gzipped text files, where each line contains a key to enable easy sorting of URLs by host and domain, a timestamp and 
+a JSON object that contains metadata about each URL.
+Information in the JSON object includes, among other things: URL, mime, detected mime, and the location of the 
+individual WARC file as specified by the path to the compound WARC and the offset and length of the individual WARC
+file within the compound WARC.  For more details, see [commoncrawl-fetcher-lite](https://github.com/tballison/commoncrawl-fetcher-lite#background).
 
 ### Common Crawl WARCs
-Common Crawl concatenates gzipped WARCs into very large WARC files.  To fetch
+Common Crawl concatenates gzipped WARCs into very large WARC files (~1GB each).  To fetch
 an individual file's original WARC, users need to know the source WARC file, the offset for the individual file and the
 length.  See below for a [worked example](#how-to-extract-an-individual-warc-from-common-crawl).
 
@@ -251,7 +252,8 @@ We sorted the files by `sha-256` and then numbered them from 0 (`0000000.pdf`) t
 8 million (`7932877.pdf`).  We added a `.pdf` file extension to every file.
 
 # Errata 
-We are aware that the following PDFs are missing from the corpus. There were caused by sporadic S3 write exceptions during the fetching 
+We are aware that the following PDFs are missing from the corpus. Their omission was caused by rare and sporadic S3 
+write exceptions during the fetching 
 and refetching.
 
 | File name  | sha256                                                           |
@@ -287,7 +289,7 @@ and refetching.
 | 7889525.pdf | fe9b31aa4fcf115ae893ffb2937558a11ee7c80ed9dd1908c3a9451ae8d3c140 |
 
 # Extras
-## 1. How to extract an individual WARC from Common Crawl
+## 1. How to manually extract an individual WARC from Common Crawl
 First, users need the `cc_warc_file`, the `cc_warc_start` and the `cc_warc_end` from the provenance table.
 We'll use `curl` and `gunzip`. Let's say we want to pull `0000000.pdf` which comes from `crawl-data/CC-MAIN-2021-31/segments/1627046154042.23/warc/CC-MAIN-20210731011529-20210731041529-00143.warc.gz`
 starting at offset `3,724,499` and ends at offset `3,742,341` (inclusive).
@@ -296,3 +298,8 @@ starting at offset `3,724,499` and ends at offset `3,742,341` (inclusive).
 3. Fetch the gzipped WARC file: `curl -r 3724499-3742341 https://data.commoncrawl.org/crawl-data/CC-MAIN-2021-31/segments/1627046154042.23/warc/CC-MAIN-20210731011529-20210731041529-00143.warc.gz -o 0000000.warc.gz`
 4. `gunzip 0000000.warc.gz`
 
+## 2. How to run your own extraction
+The original code for this crawl is available [here](https://github.com/tballison/file-observatory/tree/main/commoncrawl-fetcher).  
+After this crawl, we simplified the code and extracted the submodule into its own repo.
+As of March 2023, the code is still "ALPHA" grade, but we encourage people
+who need a more recent set of files or different mime types to try it out.  Releases are available [here](https://github.com/tballison/commoncrawl-fetcher-lite/releases) 
