@@ -225,16 +225,16 @@ We ran a development version of Tika between versions 2.8.0 and 2.8.1. We turned
 * `pdfvt_version` — the PDF/VT version if the file identifies as PDF/VT
 * `pdf_num_3d_annotations` — the number of 3D annotations in the container file
 * `pdf_has_acroform_fields` — whether the PDF has AcroForm fields
-* `pdf_incremental_updates` — the number of incremental updates as counted by Apache Tika’s rough heuristic of scanning for startxref and %%EOF
+* `pdf_incremental_updates` — the number of incremental updates as counted by Apache Tika’s rough heuristic of scanning for `startxref` and `%%EOF`
 * `pdf_overall_unmapped_unicode_chars` — the percentage of characters extracted from the PDF that do not have Unicode mappings.
 * `pdf_contains_damaged_font` — whether PDFBox identifies a damaged font
 * `pdf_contains_non_embedded_font` — whether PDFBox identifies a non-embedded font
 * `has_signature` — whether the file has a digital signature. This can be true of PDFs and MSOffice files.
 * `location` – latitude,longitude when extracted from the metadata of a file (e.g. EXIF metadata); applies to embedded files, not as much to container files that are PDFs
-* `tika_eval_num_tokens` — the number of tokens (words) that were counted in the extracted text by the tika-eval module
-* `tika_eval_num_alpha_tokens` — the number of alphabetic tokens (words) that were counted in the extracted text by the tika-eval module
-* `tika_eval_lang` — the language as identified by tika-eval‘s language detector on the extracted text (statistical classifier based on character frequencies)
-* `tika_eval_oov` — the out of vocabulary statistic as calculated by tika-eval. After running language identification on the extracted text, the tika-eval module counts how many words in the extracted text were in the top 20k most common words for the identified language. When there are enough tokens (> 100) and this value is high, that may indicate that the extracted text is garbled.
+* `tika_eval_num_tokens` — the number of tokens (words) that were counted in the extracted text by the `tika-eval` module
+* `tika_eval_num_alpha_tokens` — the number of alphabetic tokens (words) that were counted in the extracted text by the `tika-eval` module
+* `tika_eval_lang` — the language as identified by `tika-eval`‘s language detector on the extracted text (statistical classifier based on character frequencies)
+* `tika_eval_oov` — the out of vocabulary statistic as calculated by `tika-eval`. After running language identification on the extracted text, the `tika-eval` module counts how many words in the extracted text were in the top 20k most common words for the identified language. When there are enough tokens (> 100) and this value is high, that may indicate that the extracted text is garbled.
 * `container_exception` — the stacktrace if there was a parse exception on the file
 
 ### Apache Tika metadata — Container file with Attachments
@@ -243,8 +243,8 @@ We ran a development version of Tika between versions 2.8.0 and 2.8.1. We turned
 * `attachment_num` — if the file is an attachment, this is the attachment number within the primary container file
 * `emb_depth` — the embedded depth of the attachment (if an attachment)
 * `embedded_id` — a unique id for the embedded file
-* `embedded_id_path` — the path based on the unique ids for the embedded file. For example if a PDF has an attached MSG file (id=1) that itself has an attached DOCX file (id=2), then the path for the DOCX file would be /1/2
-* `embedded_resource_type` — whether this was an ATTACHMENT or a MACRO
+* `embedded_id_path` — the path based on the unique ids for the embedded file. For example if a PDF has an attached MSG file (`id=1`) that itself has an attached DOCX file (`id=2`), then the path for the DOCX file would be `/1/2`
+* `embedded_resource_type` — whether this was an `ATTACHMENT` or a `MACRO`
 * `embedded_exception` — the stacktrace on the embedded file if there was a catchable parse exception thrown during the processing of the embedded file
 
 # Related Work
