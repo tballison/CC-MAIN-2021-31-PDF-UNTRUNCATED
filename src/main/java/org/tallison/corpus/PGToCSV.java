@@ -41,10 +41,15 @@ public class PGToCSV {
         Files.createDirectories(csvRoot);
         Path csv = csvRoot.resolve("cc-hosts-20230324-1k.csv");
         int rows = 0;
-
+        int fetchSize = 10000;
         try (Connection connection = DriverManager.getConnection(connectionString)) {
+            connection.setAutoCommit(false);//needed for set fetch size (?)
             try (Statement st = connection.createStatement()) {
+                st.setFetchSize(fetchSize);
                 try (ResultSet rs = st.executeQuery(sql)) {
+                    rs.setFetchSize(fetchSize);
+                    rs.setFetchDirection(ResultSet.FETCH_FORWARD);
+
                     LOGGER.info("executed query");
                     try (BufferedWriter writer = getWriter(csv)) {
                         try (CSVPrinter printer = new CSVPrinter(writer, CSVFormat.EXCEL)) {
