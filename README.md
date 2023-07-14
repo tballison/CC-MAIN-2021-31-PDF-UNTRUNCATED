@@ -188,7 +188,64 @@ We ran this in a Docker container based on `debian:bullseye-20230227-slim` with 
 |-1	| 2          | timeout                                                               |
 |1| null       | 0 byte file                                                           |
 
+## Apache Tika metadata — Overview
+There are two Apache Tika metadata tables.
 
+* `tika-20230714.csv.gz` — this includes metadata extracted and/or calculated by Apache Tika on the primary container/input file. Each row represents the metadata for a given input file as fetched from a specific URL. As in the other tables, these tables are “URL” based, which means that an identical file (as calculated by SHA-256) may appear several times in the file.
+* `tika-with-attachments-20230714.csv.gz` — this includes metadata extracted and/or calculated by Apache Tika on the primary container/input files and on their attachments. Each row represents an input file or its attachment(s) for a given URL
+
+We ran a development version of Tika between versions 2.8.0 and 2.8.1. We turned off Apache Tika’s integration with tesseract-ocr. We also turned off processing of images that were intended to be rendered.
+
+### Apache Tika metadata — Container file
+`tika-20230714.csv.gz`
+
+* `url_id` — primary key for each URL fetched or refetched. This key can be joined with the url_id in the cc-provenance-20230303.csv.gz table.
+* `file_name` — name of the PDF file as our project named it inside the zip. This value is not unique in this table because a given PDF (as identified by its sha256) may have been fetched from multiple URLs.
+* `parse_status` — options: OK, PARSE_EXCEPTION, TIMEOUT, OOM, UNSPECIFIED_CRASH
+* `parse_time_millis` — milliseconds to process the file
+* `mime` — the file type as identified by Apache Tika
+* `macro_count` — the number of macros/javascript files in the container file. This does not include counts of macros embedded within embedded files.
+* `attachment_count` — the number of attachments in the container file. An attachment is a file that was attached to/embedded in the container file and is intended to exist as a standalone file. We do not include in these counts — image files, inline images, font files, ICC profiles or any other embedded files that are used for the rendering or functionality of the container file. Tika looks for “attachments” in PDFs by looking for the /FileSpec keys in the PDF.
+* `created` — date created (XMP is preferred over the standard metadata dictionary if both exist).
+* `modified` — date modified (XMP is preferred over the standard metadata dictionary if both exist).
+* `encrypted` — whether the file is encrypted or not
+* `has_xfa` — whether the PDF has XFA
+* `has_xmp` — whether the PDF has XMP
+* `has_collection` — whether the PDF has a collection and is a portfolio PDF
+* `has_marked_content` — whether the PDF has marked content
+* `num_pages` — the number of pages
+* `xmp_creator_tool` — the creator tool (XMP is preferred over the standard metadata dictionary if both exist)
+* `pdf_producer` — the producer
+* `pdf_version` — the PDF version as identified by PDFBox
+* `pdfa_version` — the PDF/A version if this file identifies as a PDF/A
+* `pdfuaid_part` — the PDF/UA id part if the file identifies as a PDF/UA
+* `pdfx_conformance` — the PDF/X conformance if the file identifies as a PDF/X
+* `pdfx_version` — the PDF/X version if the file identifies as PDF/X
+* `pdfxid_version` — the PDF/X id if the file identifies as PDF/X
+* `pdfvt_version` — the PDF/VT version if the file identifies as PDF/VT
+* `pdf_num_3d_annotations` — the number of 3D annotations in the container file
+* `pdf_has_acroform_fields` — whether the PDF has AcroForm fields
+* `pdf_incremental_updates` — the number of incremental updates as counted by Apache Tika’s rough heuristic of scanning for startxref and %%EOF
+* `pdf_overall_unmapped_unicode_chars` — the percentage of characters extracted from the PDF that do not have Unicode mappings.
+* `pdf_contains_damaged_font` — whether PDFBox identifies a damaged font
+* `pdf_contains_non_embedded_font` — whether PDFBox identifies a non-embedded font
+* `has_signature` — whether the file has a digital signature. This can be true of PDFs and MSOffice files.
+* `location` – latitude,longitude when extracted from the metadata of a file (e.g. EXIF metadata); applies to embedded files, not as much to container files that are PDFs
+* `tika_eval_num_tokens` — the number of tokens (words) that were counted in the extracted text by the tika-eval module
+* `tika_eval_num_alpha_tokens` — the number of alphabetic tokens (words) that were counted in the extracted text by the tika-eval module
+* `tika_eval_lang` — the language as identified by tika-eval‘s language detector on the extracted text (statistical classifier based on character frequencies)
+* `tika_eval_oov` — the out of vocabulary statistic as calculated by tika-eval. After running language identification on the extracted text, the tika-eval module counts how many words in the extracted text were in the top 20k most common words for the identified language. When there are enough tokens (> 100) and this value is high, that may indicate that the extracted text is garbled.
+* `container_exception` — the stacktrace if there was a parse exception on the file
+
+### Apache Tika metadata — Container file with Attachments
+`tika-with-attachments-20230714.csv.gz`
+
+* `attachment_num` — if the file is an attachment, this is the attachment number within the primary container file
+* `emb_depth` — the embedded depth of the attachment (if an attachment)
+* `embedded_id` — a unique id for the embedded file
+* `embedded_id_path` — the path based on the unique ids for the embedded file. For example if a PDF has an attached MSG file (id=1) that itself has an attached DOCX file (id=2), then the path for the DOCX file would be /1/2
+* `embedded_resource_type` — whether this was an ATTACHMENT or a MACRO
+* `embedded_exception` — the stacktrace on the embedded file if there was a catchable parse exception thrown during the processing of the embedded file
 
 # Related Work
 * Allison, Timothy. "_Making more sense of PDF structures in the wild at scale._" PDF Days Europe 2022, September 12-13, 2022. [Video and slide deck](https://www.pdfa.org/presentation/making-more-sense-of-pdf-structures-in-the-wild-at-scale/).
