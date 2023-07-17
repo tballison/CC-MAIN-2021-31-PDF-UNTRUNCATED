@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!-- example tika config.  Need to add aws profile and bucket info as well as jdbc connection
+   info -->
+<!-- next time we do this, we should delete the "allowExtractionForAccessibility" entry in the config
+and make sure to include the name of the embedded files -->
+<properties>
+  <parsers>
+    <parser class="org.apache.tika.parser.DefaultParser">
+      <!-- this is not formally necessary, but prevents loading of unnecessary parsers -->
+      <parser-exclude class="org.apache.tika.parser.pdf.PDFParser"/>
+      <parser-exclude class="org.apache.tika.parser.microsoft.ooxml.OOXMLParser"/>
+      <parser-exclude class="org.apache.tika.parser.microsoft.OfficeParser"/>
+      <parser-exclude class="org.apache.tika.parser.ocr.TesseractOCRParser"/>
+      <parser-exclude class="org.apache.tika.parser.external.CompositeExternalParser"/>
+    </parser>
+    <parser class="org.apache.tika.parser.microsoft.ooxml.OOXMLParser">
+      <params>
+        <param name="includeDeletedContent" type="bool">true</param>
+        <param name="includeMoveFromContent" type="bool">true</param>
+        <param name="extractMacros" type="bool">true</param>
+      </params>
+    </parser>
+    <parser class="org.apache.tika.parser.microsoft.OfficeParser">
+      <params>
+        <param name="extractMacros" type="bool">true</param>
+      </params>
+    </parser>
+    <parser class="org.apache.tika.parser.pdf.PDFParser">
+      <params>
+        <param name="allowExtractionForAccessibility" type="bool">true</param>
+        <param name="averageCharTolerance" type="float">0.3</param>
+        <param name="detectAngles" type="bool">false</param>
+        <param name="extractAcroFormContent" type="bool">true</param>
+        <param name="extractActions" type="bool">true</param>
+        <param name="extractIncrementalUpdateInfo" type="bool">true</param>
+        <param name="catchIntermediateIOExceptions" type="bool">true</param>
+        <param name="dropThreshold" type="float">2.5</param>
+        <param name="enableAutoSpace" type="bool">true</param>
+        <param name="extractAnnotationText" type="bool">false</param>
+        <param name="extractBookmarksText" type="bool">true</param>
+        <param name="extractFontNames" type="bool">false</param>
+        <param name="extractInlineImages" type="bool">false</param>
+        <param name="extractUniqueInlineImagesOnly" type="bool">true</param>
+        <param name="ifXFAExtractOnlyXFA" type="bool">false</param>
+        <param name="maxMainMemoryBytes" type="long">-1</param>
+        <!-- as of 2.8.0 -->
+        <param name="maxIncrementalUpdates" type="int">10000</param>
+        <param name="ocrDPI" type="int">300</param>
+        <param name="ocrImageFormatName" type="string">png</param>
+        <param name="ocrImageQuality" type="float">1.0</param>
+        <param name="ocrRenderingStrategy" type="string">ALL</param>
+        <param name="ocrStrategy" type="string">auto</param>
+        <param name="ocrStrategyAuto" type="string">better</param>
+        <param name="ocrImageType" type="string">gray</param>
+        <!-- as of 2.8.0 -->
+        <param name="parseIncrementalUpdates" type="bool">false</param>
+        <param name="setKCMS" type="bool">false</param>
+        <param name="sortByPosition" type="bool">false</param>
+        <param name="spacingTolerance" type="float">0.5</param>
+        <param name="suppressDuplicateOverlappingText" type="bool">false</param>
+        <!-- as of versions after 2.8.0 -->
+        <param name="throwOnEncryptedPayload" type="bool">false</param>
+      </params>
+    </parser>
+  </parsers>
+  <async>
+    <maxForEmitBatchBytes>100000</maxForEmitBatchBytes>
+    <emitMaxEstimatedBytes>1000000</emitMaxEstimatedBytes>
+    <emitWithinMillis>1000</emitWithinMillis>
+    <numEmitters>1</numEmitters>
+    <numClients>3</numClients>
+    <!--<pipesTmpDir>/Users/allison/Desktop/tmpDir</pipesTmpDir>-->
+    <!--<tikaConfig>{TIKA_CONFIG}</tikaConfig>-->
+    <forkedJvmArgs>
+      <arg>-Xmx256m</arg>
+      <arg>-XX:ParallelGCThreads=2</arg>
+      <arg>-Dlog4j.configurationFile=/Users/allison/Desktop/tika-pipes-pdf/bin/pipes-log4j2.xml</arg>
+    </forkedJvmArgs>
+    <timeoutMillis>5000</timeoutMillis>
+    <!--<pipesReporter class="org.apache.tika.pipes.reporters.jdbc.JDBCPipesReporter">
+        <connection>jdbc:postgresql://fill in here</connection>
+        <excludes>
+            <exclude>PARSE_SUCCESS</exclude>
+            <exclude>PARSE_SUCCESS_WITH_EXCEPTION</exclude>
+            <exclude>EMIT_SUCCESS</exclude>
+        </excludes>
+        <reportWithinMs>10000</reportWithinMs>
+    </pipesReporter>-->
+  </async>
+  <fetchers>
+    <fetcher class="org.apache.tika.pipes.fetcher.s3.S3Fetcher">
+      <name>s3</name>
+      <credentialsProvider>profile</credentialsProvider>
+      <profile>profile</profile>
+      <region>us-east-1</region>
+      <bucket>bucket</bucket>
+      <!-- don't need a prefix here <prefix>commoncrawl</prefix> -->
+    </fetcher>
+
+    <fetcher class="org.apache.tika.pipes.fetcher.fs.FileSystemFetcher">
+      <params>
+        <name>fsf</name>
+        <basePath>/Users/allison/Desktop/stuff/tika-input</basePath>
+      </params>
+    </fetcher>
+  </fetchers>
+  <emitters>
+    <!--
+   <emitter class="org.apache.tika.pipes.emitter.jdbc.JDBCEmitter">
+      <params>
+      <name>jdbc</name>
+      <connection>jdbc:postgresql://something...fill in here!!!</connection>
+      < ! - -   <createTable>drop table if exists tika_info;
+create table tika_info (
+  path varchar(1024),
+  attachment_num integer,
+  parse_time_millis bigint,
+          mime varchar(128),
+          emb_depth integer,
+          embedded_id integer,
+          embedded_id_path varchar(1024),
+          embedded_resource_type varchar(64),
+          created timestamp,
+          modified timestamp,
+          encrypted boolean,
+          has_xfa boolean,
+          has_xmp boolean,
+          has_collection boolean,
+          has_marked_content boolean,
+          num_pages integer,
+          xmp_creator_tool varchar(1024),
+          pdf_producer varchar(1024),
+          pdf_version varchar(32),
+          pdfa_version varchar(16),
+          pdfuaid_part integer,
+          pdfx_conformance varchar(32),
+          pdfx_version varchar(16),
+          pdfxid_version varchar(16),
+          pdfvt_version varchar(16),
+          pdf_num_3d_annotations integer,
+          pdf_has_acroform_fields boolean,
+          pdf_incremental_updates integer,
+          pdf_overall_unmapped_unicode_chars float,
+          pdf_contains_damaged_font boolean,
+          pdf_contains_non_embedded_font boolean,
+          has_signature boolean,
+          location varchar(128),
+          tika_eval_num_tokens bigint,
+          tika_eval_num_alpha_tokens bigint,
+          tika_eval_lang varchar(16),
+          tika_eval_oov float,
+          container_exception varchar(10240),
+          embedded_exception varchar(10240)
+);
+         </createTable>- - >
+      <! - - the jdbc emitter always puts ths emitKey value as the first
+           item  - - >
+        <insert>insert into tika_info (
+          path, attachment_num, parse_time_millis, mime, emb_depth,
+          embedded_id, embedded_id_path, embedded_resource_type, created, modified,
+          encrypted,has_xfa, has_xmp, has_collection, has_marked_content,
+          num_pages, xmp_creator_tool, pdf_producer, pdf_version, pdfa_version,
+          pdfuaid_part, pdfx_conformance, pdfx_version, pdfxid_version, pdfvt_version,
+          pdf_num_3d_annotations, pdf_has_acroform_fields, pdf_incremental_updates, pdf_overall_unmapped_unicode_chars, pdf_contains_damaged_font,
+          pdf_contains_non_embedded_font, has_signature, location, tika_eval_num_tokens, tika_eval_num_alpha_tokens,
+          tika_eval_lang, tika_eval_oov, container_exception, embedded_exception)
+          values (
+            ?,?,?,?,?,
+            ?,?,?,?,?,
+            ?,?,?,?,?,
+            ?,?,?,?,?,
+            ?,?,?,?,?,
+            ?,?,?,?,?,
+            ?,?,?,?,?,
+            ?,?,?,?);
+        </insert>
+        < ! - - these are the keys in the metadata object.
+            The emitKey is added as the first element in the insert statement.
+            Then the these values are added in order.
+            They must be in the order of the insert statement.
+            The emit key is added as
+             - - >
+        <keys>
+          <key k="parse_time_millis" v="bigint"/>
+          <key k="mime" v="varchar(128)"/>
+          <key k="emb_depth" v="integer"/>
+          <key k="embedded_id" v="integer"/>
+          <key k="embedded_id_path" v="varchar(1024)"/>
+          <key k="embedded_resource_type" v="varchar(64)"/>
+          <key k="created" v="timestamp"/>
+          <key k="modified" v="timestamp"/>
+          <key k="encrypted" v="boolean"/>
+          <key k="has_xfa" v="boolean"/>
+          <key k="has_xmp" v="boolean"/>
+          <key k="has_collection" v="boolean"/>
+          <key k="has_marked_content" v="boolean"/>
+          <key k="num_pages" v="integer"/>
+          <key k="xmp_creator_tool" v="varchar(1024)"/>
+          <key k="pdf_producer" v="varchar(1024)"/>
+          <key k="pdf_version" v="varchar(32)"/>
+          <key k="pdfa_version" v="varchar(16)"/>
+          <key k="pdfuaid_part" v="integer"/>
+          <key k="pdfx_conformance" v="varchar(32)"/>
+          <key k="pdfx_version" v="varchar(16)"/>
+          <key k="pdfxid_version" v="varchar(16)"/>
+          <key k="pdfvt_version" v="varchar(16)"/>
+          <key k="pdf_num_3d_annotations" v="integer"/>
+          <key k="pdf_has_acroform_fields" v="boolean"/>
+          <key k="pdf_incremental_updates" v="integer"/>
+          <key k="pdf_overall_unmapped_unicode_chars" v="float"/>
+          <key k="pdf_contains_damaged_font" v="boolean"/>
+          <key k="pdf_contains_non_embedded_font" v="boolean"/>
+          <key k="has_signature" v="boolean"/>
+          <key k="location" v="varchar(128)"/>
+          <key k="tika_eval_num_tokens" v="bigint"/>
+          <key k="tika_eval_num_alpha_tokens" v="bigint"/>
+          <key k="tika_eval_lang" v="varchar(16)"/>
+          <key k="tika_eval_oov" v="float"/>
+          <key k="container_exception" v="varchar(10240)"/>
+          <key k="embedded_exception" v="varchar(10240)"/>
+        </keys>
+        <attachmentStrategy>all</attachmentStrategy>
+      </params>
+    </emitter> -->
+    <emitter class="org.apache.tika.pipes.emitter.fs.FileSystemEmitter">
+      <name>fse</name>
+      <basePath>/Users/allison/Desktop/stuff/tika-output</basePath>
+    </emitter>
+
+  </emitters>
+  <metadataFilters>
+    <metadataFilter class="org.apache.tika.metadata.filter.GeoPointMetadataFilter"/>
+    <metadataFilter class="org.apache.tika.metadata.filter.DateNormalizingMetadataFilter"/>
+    <metadataFilter class="org.apache.tika.eval.core.metadata.TikaEvalMetadataFilter"/>
+    <metadataFilter class="org.apache.tika.metadata.filter.FieldNameMappingFilter">
+      <params>
+        <excludeUnmapped>true</excludeUnmapped>
+        <mappings>
+          <mapping from="X-TIKA:parse_time_millis" to="parse_time_millis"/>
+          <mapping from="Content-Type" to="mime"/>
+          <mapping from="X-TIKA:embedded_depth" to="emb_depth"/>
+          <mapping from="X-TIKA:embedded_id" to="embedded_id"/>
+          <mapping from="X-TIKA:embedded_id_path" to="embedded_id_path"/>
+          <mapping from="embeddedResourceType" to="embedded_resource_type"/>
+          <mapping from="dcterms:created" to="created"/>
+          <mapping from="dcterms:modified" to="modified"/>
+          <mapping from="pdf:encrypted" to="encrypted"/>
+          <mapping from="pdf:hasXFA" to="has_xfa"/>
+          <mapping from="pdf:hasXMP" to="has_xmp"/>
+          <mapping from="pdf:hasCollection" to="has_collection"/>
+          <mapping from="pdf:hasMarkedContent" to="has_marked_content"/>
+          <mapping from="xmpTPg:NPages" to="num_pages"/>
+          <mapping from="xmp:CreatorTool" to="xmp_creator_tool"/>
+          <mapping from="pdf:producer" to="pdf_producer"/>
+          <mapping from="pdf:PDFVersion" to="pdf_version"/>
+          <mapping from="pdfa:PDFVersion" to="pdfa_version"/>
+          <mapping from="pdfuaid:part" to="pdfuaid_part"/>
+          <mapping from="pdfx:conformance" to="pdfx_conformance"/>
+          <mapping from="pdfx:version" to="pdfx_version"/>
+          <mapping from="pdfxid:version" to="pdfxid_version"/>
+          <mapping from="pdfvt:version" to="pdfvt_version"/>
+          <mapping from="pdf:num3DAnnotations" to="pdf_num_3d_annotations"/>
+          <mapping from="pdf:hasAcroFormFields" to="pdf_has_acroform_fields"/>
+          <mapping from="pdf:incrementalUpdateCount" to="pdf_incremental_updates"/>
+          <mapping from="pdf:overallPercentageUnmappedUnicodeChars" to="pdf_overall_unmapped_unicode_chars"/>
+          <mapping from="pdf:containsDamagedFont" to="pdf_contains_damaged_font"/>
+          <mapping from="pdf:containsNonEmbeddedFont" to="pdf_contains_non_embedded_font"/>
+          <mapping from="hasSignature" to="has_signature"/>
+          <mapping from="location" to="location"/>
+          <mapping from="tika-eval:numTokens" to="tika_eval_num_tokens"/>
+          <mapping from="tika-eval:numAlphaTokens" to="tika_eval_num_alpha_tokens"/>
+          <mapping from="tika-eval:lang" to="tika_eval_lang"/>
+          <mapping from="tika-eval:oov" to="tika_eval_oov"/>
+          <mapping from="X-TIKA:EXCEPTION:container_exception" to="container_exception"/>
+          <mapping from="X-TIKA:EXCEPTION:embedded_exception" to="embedded_exception"/>
+        </mappings>
+      </params>
+    </metadataFilter>
+  </metadataFilters>
+
+  <!-- <pipesIterator class="org.apache.tika.pipes.pipesiterator.fs.FileSystemPipesIterator">
+     <fetcherName>fsf</fetcherName>
+     <emitterName>jdbc</emitterName>
+     <basePath>/Users/allison/Desktop/stuff/tika-input</basePath>
+   </pipesIterator>-->
+  <pipesIterator class="org.apache.tika.pipes.pipesiterator.s3.S3PipesIterator">
+    <fetcherName>s3</fetcherName>
+    <emitterName>fse</emitterName>
+    <credentialsProvider>profile</credentialsProvider>
+    <profile>profile</profile>
+    <region>us-east-1</region>
+    <bucket>bucket</bucket>
+    <prefix>commoncrawl</prefix>
+  </pipesIterator>
+
+</properties>
